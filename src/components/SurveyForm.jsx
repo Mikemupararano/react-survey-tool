@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Form, Button, Col, Row, Container } from 'react-bootstrap';
+import { Form, Button, Container, Modal } from 'react-bootstrap';
 import axios from 'axios';
+import './SurveyForm.css'; // Custom CSS for full-width form
 
 const SurveyForm = () => {
   const initialQuestions = [
@@ -19,7 +20,8 @@ const SurveyForm = () => {
   ];
 
   const [questions, setQuestions] = useState(initialQuestions);
-  const [productQuestions, setProductQuestions] = useState([{ id: 1, name: '', description: '', materials: '', recycled: '', origin: '' }]);
+  const [showModal, setShowModal] = useState(false);
+  const [newQuestionType, setNewQuestionType] = useState('text');
 
   const handleInputChange = (e, id) => {
     const updatedQuestions = questions.map((question) => {
@@ -31,45 +33,23 @@ const SurveyForm = () => {
     setQuestions(updatedQuestions);
   };
 
-  const handleProductChange = (e, id, field) => {
-    const updatedProducts = productQuestions.map((product) => {
-      if (product.id === id) {
-        return { ...product, [field]: e.target.value };
-      }
-      return product;
-    });
-    setProductQuestions(updatedProducts);
-  };
+  const handleShowModal = () => setShowModal(true);
+  const handleCloseModal = () => setShowModal(false);
 
-  const addQuestion = () => {
-    const newQuestion = { id: questions.length + 1, type: 'text', label: '', value: '' };
+  const handleAddQuestion = () => {
+    const newQuestion = { id: questions.length + 1, type: newQuestionType, label: `Question ${questions.length + 1}`, value: '', options: newQuestionType === 'select' ? ['Option 1', 'Option 2'] : undefined };
     setQuestions([...questions, newQuestion]);
+    handleCloseModal();
   };
 
   const removeQuestion = (id) => {
     setQuestions(questions.filter((question) => question.id !== id));
   };
 
-  const changeQuestionType = (id, type) => {
-    const updatedQuestions = questions.map((question) => {
-      if (question.id === id) {
-        return { ...question, type: type, value: '', options: type === 'select' ? ['Option 1', 'Option 2'] : undefined };
-      }
-      return question;
-    });
-    setQuestions(updatedQuestions);
-  };
-
-  const addProduct = () => {
-    const newProduct = { id: productQuestions.length + 1, name: '', description: '', materials: '', recycled: '', origin: '' };
-    setProductQuestions([...productQuestions, newProduct]);
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     const formData = {
-      general: questions,
-      products: productQuestions
+      general: questions
     };
     try {
       await axios.post(`${process.env.REACT_APP_API_URL}/api/survey`, formData);
@@ -83,38 +63,12 @@ const SurveyForm = () => {
     <Container>
       <Form onSubmit={handleSubmit}>
         {questions.map((question) => (
-          <Form.Group key={question.id}>
-            <Row className="align-items-center mb-3">
-              <Col md={4}>
-                <Form.Control
-                  type="text"
-                  placeholder="Enter question label"
-                  value={question.label}
-                  onChange={(e) => handleInputChange(e, question.id)}
-                />
-              </Col>
-              <Col md={4}>
-                <Form.Control
-                  as="select"
-                  value={question.type}
-                  onChange={(e) => changeQuestionType(question.id, e.target.value)}
-                >
-                  <option value="text">Text</option>
-                  <option value="textarea">Textarea</option>
-                  <option value="number">Number</option>
-                  <option value="email">Email</option>
-                  <option value="select">Select</option>
-                </Form.Control>
-              </Col>
-              <Col md={4}>
-                <Button variant="danger" onClick={() => removeQuestion(question.id)}>Remove</Button>
-              </Col>
-            </Row>
+          <Form.Group key={question.id} className="mb-3 full-width">
+            <Form.Label>{question.label}</Form.Label>
             {question.type === 'textarea' ? (
               <Form.Control
                 as="textarea"
                 rows={3}
-                placeholder={question.label}
                 value={question.value}
                 onChange={(e) => handleInputChange(e, question.id)}
               />
@@ -134,82 +88,45 @@ const SurveyForm = () => {
             ) : (
               <Form.Control
                 type={question.type}
-                placeholder={question.label}
                 value={question.value}
                 onChange={(e) => handleInputChange(e, question.id)}
               />
             )}
+            <Button variant="danger" onClick={() => removeQuestion(question.id)} className="mt-2">Remove</Button>
           </Form.Group>
         ))}
-        <Button variant="secondary" onClick={addQuestion}>Add Question</Button>
-        <h4 className="mt-4">Product Information</h4>
-        {productQuestions.map((product) => (
-          <div key={product.id}>
-            <Row>
-              <Col>
-                <Form.Group>
-                  <Form.Label>Product Name</Form.Label>
-                  <Form.Control
-                    type="text"
-                    value={product.name}
-                    onChange={(e) => handleProductChange(e, product.id, 'name')}
-                  />
-                </Form.Group>
-              </Col>
-              <Col>
-                <Form.Group>
-                  <Form.Label>Description</Form.Label>
-                  <Form.Control
-                    type="text"
-                    value={product.description}
-                    onChange={(e) => handleProductChange(e, product.id, 'description')}
-                  />
-                </Form.Group>
-              </Col>
-            </Row>
-            <Row>
-              <Col>
-                <Form.Group>
-                  <Form.Label>Material Composition</Form.Label>
-                  <Form.Control
-                    type="text"
-                    value={product.materials}
-                    onChange={(e) => handleProductChange(e, product.id, 'materials')}
-                  />
-                </Form.Group>
-              </Col>
-              <Col>
-                <Form.Group>
-                  <Form.Label>Percentage of Recycled Materials Used</Form.Label>
-                  <Form.Control
-                    type="number"
-                    value={product.recycled}
-                    onChange={(e) => handleProductChange(e, product.id, 'recycled')}
-                  />
-                </Form.Group>
-              </Col>
-            </Row>
-            <Row>
-              <Col>
-                <Form.Group>
-                  <Form.Label>Country of Origin</Form.Label>
-                  <Form.Control
-                    type="text"
-                    value={product.origin}
-                    onChange={(e) => handleProductChange(e, product.id, 'origin')}
-                  />
-                </Form.Group>
-              </Col>
-            </Row>
-          </div>
-        ))}
-        <Button variant="secondary" onClick={addProduct}>Add More Products</Button>
-        <Button variant="primary" type="submit">Submit</Button>
+        <Button variant="secondary" onClick={handleShowModal} className="mt-3">Add Question</Button>
+        <Button variant="primary" type="submit" className="mt-3">Submit</Button>
       </Form>
+
+      <Modal show={showModal} onHide={handleCloseModal}>
+        <Modal.Header closeButton>
+          <Modal.Title>Select Question Type</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form.Group>
+            <Form.Label>Question Type</Form.Label>
+            <Form.Control as="select" value={newQuestionType} onChange={(e) => setNewQuestionType(e.target.value)}>
+              <option value="text">Text</option>
+              <option value="textarea">Textarea</option>
+              <option value="number">Number</option>
+              <option value="email">Email</option>
+              <option value="select">Select</option>
+            </Form.Control>
+          </Form.Group>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleCloseModal}>
+            Close
+          </Button>
+          <Button variant="primary" onClick={handleAddQuestion}>
+            Add Question
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </Container>
   );
 };
 
 export default SurveyForm;
-
 
