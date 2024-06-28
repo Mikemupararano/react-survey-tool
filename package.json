@@ -1,0 +1,30 @@
+{
+  "name": "survey-app",
+  "version": "0.1.0",
+  "private": true,
+  "homepage": "https://Mikemupararano.github.io/react-survey-tool",
+  "scripts": {
+    "dev": "vite",
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "dependencies": {
+    "@vitejs/plugin-react": "^4.3.1",
+    "axios": "^1.7.2",
+    "bootstrap": "^5.3.3",
+    "node": "^20.15.0",
+    "react": "^18.3.1",
+    "react-beautiful-dnd": "^13.1.1",
+    "react-bootstrap": "^2.10.3",
+    "react-dom": "^18.3.1",
+    "react-scripts": "^5.0.1",
+    "vite": "^5.3.2"
+  },
+  "devDependencies": {
+    "gh-pages": "^6.1.1"
+  }
+}

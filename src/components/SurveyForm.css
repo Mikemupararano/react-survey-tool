@@ -1,0 +1,25 @@
+/* Custom CSS for full-width form elements */
+.full-width {
+  width: 100%;
+}
+
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-group label {
+  width: 100%;
+}
+
+.form-group .form-control,
+.form-group .form-select {
+  width: 100%;
+}
+
+.mt-2 {
+  margin-top: 0.5rem;
+}
+
+.mt-3 {
+  margin-top: 1rem;
+}
