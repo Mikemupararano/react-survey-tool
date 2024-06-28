@@ -22,6 +22,7 @@ const SurveyForm = () => {
   const [questions, setQuestions] = useState(initialQuestions);
   const [showModal, setShowModal] = useState(false);
   const [newQuestionType, setNewQuestionType] = useState('text');
+  const [newQuestionLabel, setNewQuestionLabel] = useState('');
 
   const handleInputChange = (e, id) => {
     const updatedQuestions = questions.map((question) => {
@@ -37,8 +38,15 @@ const SurveyForm = () => {
   const handleCloseModal = () => setShowModal(false);
 
   const handleAddQuestion = () => {
-    const newQuestion = { id: questions.length + 1, type: newQuestionType, label: `Question ${questions.length + 1}`, value: '', options: newQuestionType === 'select' ? ['Option 1', 'Option 2'] : undefined };
+    const newQuestion = {
+      id: questions.length + 1,
+      type: newQuestionType,
+      label: newQuestionLabel,
+      value: '',
+      options: newQuestionType === 'select' ? ['Option 1', 'Option 2'] : undefined
+    };
     setQuestions([...questions, newQuestion]);
+    setNewQuestionLabel('');
     handleCloseModal();
   };
 
@@ -101,7 +109,7 @@ const SurveyForm = () => {
 
       <Modal show={showModal} onHide={handleCloseModal}>
         <Modal.Header closeButton>
-          <Modal.Title>Select Question Type</Modal.Title>
+          <Modal.Title>Add New Question</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form.Group>
@@ -113,6 +121,15 @@ const SurveyForm = () => {
               <option value="email">Email</option>
               <option value="select">Select</option>
             </Form.Control>
+          </Form.Group>
+          <Form.Group className="mt-3">
+            <Form.Label>Question Label</Form.Label>
+            <Form.Control
+              type="text"
+              value={newQuestionLabel}
+              onChange={(e) => setNewQuestionLabel(e.target.value)}
+              placeholder="Enter your question"
+            />
           </Form.Group>
         </Modal.Body>
         <Modal.Footer>
@@ -129,4 +146,5 @@ const SurveyForm = () => {
 };
 
 export default SurveyForm;
+
 
