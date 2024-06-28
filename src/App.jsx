@@ -2,7 +2,7 @@ import React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
 import SurveyForm from "./components/SurveyForm";
-import reactLogo from "./assets/final_logo.png";
+import reactLogo from "./assets/group8-logo.png";
 
 function App() {
   return (

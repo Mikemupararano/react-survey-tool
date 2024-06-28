@@ -5,6 +5,11 @@
   text-align: center;
 }
 
+input {
+  width: 100%;
+  box-sizing: border-box; /* Ensures padding and border are included in the width */
+}
+
 .logo {
   height: 6em;
   padding: 1.5em;
