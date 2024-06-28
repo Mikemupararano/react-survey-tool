@@ -84,13 +84,14 @@ const SurveyForm = () => {
     <Container>
       <Form onSubmit={handleSubmit}>
         <Form.Group className="mb-3">
-          <Form.Label>Survey Purpose</Form.Label>
+          <Form.Label className="survey-form-label">Survey Purpose</Form.Label>
           <Form.Control
             as="textarea"
             rows={3}
             value={surveyPurpose}
             onChange={(e) => setSurveyPurpose(e.target.value)}
             placeholder="Describe the purpose of the survey"
+            className="survey-form-control"
           />
         </Form.Group>
         <DragDropContext onDragEnd={onDragEnd}>
@@ -100,42 +101,46 @@ const SurveyForm = () => {
                 {questions.map((question, index) => (
                   <Draggable key={question.id} draggableId={String(question.id)} index={index}>
                     {(provided) => (
-                      <Form.Group
+                      <div
                         ref={provided.innerRef}
                         {...provided.draggableProps}
                         {...provided.dragHandleProps}
-                        className="mb-3 full-width"
                       >
-                        <Form.Label>{question.label}</Form.Label>
-                        {question.type === 'textarea' ? (
-                          <Form.Control
-                            as="textarea"
-                            rows={3}
-                            value={question.value}
-                            onChange={(e) => handleInputChange(e, question.id)}
-                          />
-                        ) : question.type === 'select' ? (
-                          <Form.Control
-                            as="select"
-                            value={question.value}
-                            onChange={(e) => handleInputChange(e, question.id)}
-                          >
-                            <option value="">Select...</option>
-                            {question.options && question.options.map((option, index) => (
-                              <option key={index} value={option}>
-                                {option}
-                              </option>
-                            ))}
-                          </Form.Control>
-                        ) : (
-                          <Form.Control
-                            type={question.type}
-                            value={question.value}
-                            onChange={(e) => handleInputChange(e, question.id)}
-                          />
-                        )}
-                        <Button variant="danger" onClick={() => removeQuestion(question.id)} className="mt-2">Remove</Button>
-                      </Form.Group>
+                        <Form.Group className="mb-3 full-width">
+                          <Form.Label className="survey-form-label">{question.label}</Form.Label>
+                          {question.type === 'textarea' ? (
+                            <Form.Control
+                              as="textarea"
+                              rows={3}
+                              value={question.value}
+                              onChange={(e) => handleInputChange(e, question.id)}
+                              className="survey-form-control"
+                            />
+                          ) : question.type === 'select' ? (
+                            <Form.Control
+                              as="select"
+                              value={question.value}
+                              onChange={(e) => handleInputChange(e, question.id)}
+                              className="survey-form-control"
+                            >
+                              <option value="">Select...</option>
+                              {question.options && question.options.map((option, index) => (
+                                <option key={index} value={option}>
+                                  {option}
+                                </option>
+                              ))}
+                            </Form.Control>
+                          ) : (
+                            <Form.Control
+                              type={question.type}
+                              value={question.value}
+                              onChange={(e) => handleInputChange(e, question.id)}
+                              className="survey-form-control"
+                            />
+                          )}
+                          <Button variant="danger" onClick={() => removeQuestion(question.id)} className="mt-2">Remove</Button>
+                        </Form.Group>
+                      </div>
                     )}
                   </Draggable>
                 ))}
@@ -154,8 +159,13 @@ const SurveyForm = () => {
         </Modal.Header>
         <Modal.Body>
           <Form.Group>
-            <Form.Label>Question Type</Form.Label>
-            <Form.Control as="select" value={newQuestionType} onChange={(e) => setNewQuestionType(e.target.value)}>
+            <Form.Label className="survey-form-label">Question Type</Form.Label>
+            <Form.Control
+              as="select"
+              value={newQuestionType}
+              onChange={(e) => setNewQuestionType(e.target.value)}
+              className="survey-form-control"
+            >
               <option value="text">Text</option>
               <option value="textarea">Textarea</option>
               <option value="number">Number</option>
@@ -164,12 +174,13 @@ const SurveyForm = () => {
             </Form.Control>
           </Form.Group>
           <Form.Group className="mt-3">
-            <Form.Label>Question Label</Form.Label>
+            <Form.Label className="survey-form-label">Question Label</Form.Label>
             <Form.Control
               type="text"
               value={newQuestionLabel}
               onChange={(e) => setNewQuestionLabel(e.target.value)}
               placeholder="Enter your question"
+              className="survey-form-control"
             />
           </Form.Group>
         </Modal.Body>
@@ -187,6 +198,7 @@ const SurveyForm = () => {
 };
 
 export default SurveyForm;
+
 
 
 
