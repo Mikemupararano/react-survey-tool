@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Form, Button, Container, Modal } from 'react-bootstrap';
 import axios from 'axios';
+import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import './SurveyForm.css'; // Custom CSS for full-width form
 
 const SurveyForm = () => {
@@ -23,6 +24,7 @@ const SurveyForm = () => {
   const [showModal, setShowModal] = useState(false);
   const [newQuestionType, setNewQuestionType] = useState('text');
   const [newQuestionLabel, setNewQuestionLabel] = useState('');
+  const [surveyPurpose, setSurveyPurpose] = useState('');
 
   const handleInputChange = (e, id) => {
     const updatedQuestions = questions.map((question) => {
@@ -57,6 +59,7 @@ const SurveyForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const formData = {
+      purpose: surveyPurpose,
       general: questions
     };
     try {
@@ -67,42 +70,80 @@ const SurveyForm = () => {
     }
   };
 
+  const onDragEnd = (result) => {
+    if (!result.destination) return;
+
+    const reorderedQuestions = Array.from(questions);
+    const [removed] = reorderedQuestions.splice(result.source.index, 1);
+    reorderedQuestions.splice(result.destination.index, 0, removed);
+
+    setQuestions(reorderedQuestions);
+  };
+
   return (
     <Container>
       <Form onSubmit={handleSubmit}>
-        {questions.map((question) => (
-          <Form.Group key={question.id} className="mb-3 full-width">
-            <Form.Label>{question.label}</Form.Label>
-            {question.type === 'textarea' ? (
-              <Form.Control
-                as="textarea"
-                rows={3}
-                value={question.value}
-                onChange={(e) => handleInputChange(e, question.id)}
-              />
-            ) : question.type === 'select' ? (
-              <Form.Control
-                as="select"
-                value={question.value}
-                onChange={(e) => handleInputChange(e, question.id)}
-              >
-                <option value="">Select...</option>
-                {question.options && question.options.map((option, index) => (
-                  <option key={index} value={option}>
-                    {option}
-                  </option>
+        <Form.Group className="mb-3">
+          <Form.Label>Survey Purpose</Form.Label>
+          <Form.Control
+            as="textarea"
+            rows={3}
+            value={surveyPurpose}
+            onChange={(e) => setSurveyPurpose(e.target.value)}
+            placeholder="Describe the purpose of the survey"
+          />
+        </Form.Group>
+        <DragDropContext onDragEnd={onDragEnd}>
+          <Droppable droppableId="questions">
+            {(provided) => (
+              <div {...provided.droppableProps} ref={provided.innerRef}>
+                {questions.map((question, index) => (
+                  <Draggable key={question.id} draggableId={String(question.id)} index={index}>
+                    {(provided) => (
+                      <Form.Group
+                        ref={provided.innerRef}
+                        {...provided.draggableProps}
+                        {...provided.dragHandleProps}
+                        className="mb-3 full-width"
+                      >
+                        <Form.Label>{question.label}</Form.Label>
+                        {question.type === 'textarea' ? (
+                          <Form.Control
+                            as="textarea"
+                            rows={3}
+                            value={question.value}
+                            onChange={(e) => handleInputChange(e, question.id)}
+                          />
+                        ) : question.type === 'select' ? (
+                          <Form.Control
+                            as="select"
+                            value={question.value}
+                            onChange={(e) => handleInputChange(e, question.id)}
+                          >
+                            <option value="">Select...</option>
+                            {question.options && question.options.map((option, index) => (
+                              <option key={index} value={option}>
+                                {option}
+                              </option>
+                            ))}
+                          </Form.Control>
+                        ) : (
+                          <Form.Control
+                            type={question.type}
+                            value={question.value}
+                            onChange={(e) => handleInputChange(e, question.id)}
+                          />
+                        )}
+                        <Button variant="danger" onClick={() => removeQuestion(question.id)} className="mt-2">Remove</Button>
+                      </Form.Group>
+                    )}
+                  </Draggable>
                 ))}
-              </Form.Control>
-            ) : (
-              <Form.Control
-                type={question.type}
-                value={question.value}
-                onChange={(e) => handleInputChange(e, question.id)}
-              />
+                {provided.placeholder}
+              </div>
             )}
-            <Button variant="danger" onClick={() => removeQuestion(question.id)} className="mt-2">Remove</Button>
-          </Form.Group>
-        ))}
+          </Droppable>
+        </DragDropContext>
         <Button variant="secondary" onClick={handleShowModal} className="mt-3">Add Question</Button>
         <Button variant="primary" type="submit" className="mt-3">Submit</Button>
       </Form>
@@ -146,5 +187,7 @@ const SurveyForm = () => {
 };
 
 export default SurveyForm;
+
+
 
 
